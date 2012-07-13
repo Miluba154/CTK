@@ -52,8 +52,8 @@
 #include "ctkDICOMThumbnailGenerator.h"
 #include "ctkThumbnailLabel.h"
 #include "ctkDICOMQueryResultsTabWidget.h"
-#include "ctkDICOMQueryRetrieveWidget.h"
-#include "ctkDICOMQueryWidget.h"
+//#include "ctkDICOMQueryRetrieveWidget.h"
+#include "ctkDICOMFilterWidget.h"
 
 #include "ui_ctkDICOMAppWidget.h"
 
@@ -73,7 +73,7 @@ public:
   ctkDICOMAppWidgetPrivate(ctkDICOMAppWidget* );
 
   ctkFileDialog* ImportDialog;
-  ctkDICOMQueryRetrieveWidget* QueryRetrieveWidget;
+  //ctkDICOMQueryRetrieveWidget* QueryRetrieveWidget;
 
   QSharedPointer<ctkDICOMDatabase> DICOMDatabase;
   QSharedPointer<ctkDICOMThumbnailGenerator> ThumbnailGenerator;
@@ -136,8 +136,8 @@ ctkDICOMAppWidget::ctkDICOMAppWidget(QWidget* _parent):Superclass(_parent),
   d->ToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
   //Initialize Q/R widget
-  d->QueryRetrieveWidget = new ctkDICOMQueryRetrieveWidget();
-  d->QueryRetrieveWidget->setWindowModality ( Qt::ApplicationModal );
+  //d->QueryRetrieveWidget = new ctkDICOMQueryRetrieveWidget();
+  //d->QueryRetrieveWidget->setWindowModality ( Qt::ApplicationModal );
 
   //initialize directory from settings, then listen for changes
   QSettings settings;
@@ -171,8 +171,8 @@ ctkDICOMAppWidget::ctkDICOMAppWidget(QWidget* _parent):Superclass(_parent),
   connect(d->ThumbnailsWidget, SIGNAL(doubleClicked(ctkThumbnailLabel)), this, SLOT(onThumbnailDoubleClicked(ctkThumbnailLabel)));
   connect(d->ImportDialog, SIGNAL(fileSelected(QString)),this,SLOT(onImportDirectory(QString)));
 
-  connect(d->QueryRetrieveWidget, SIGNAL(canceled()), d->QueryRetrieveWidget, SLOT(hide()) );
-  connect(d->QueryRetrieveWidget, SIGNAL(canceled()), this, SLOT(onQueryRetrieveFinished()) );
+  //connect(d->QueryRetrieveWidget, SIGNAL(canceled()), d->QueryRetrieveWidget, SLOT(hide()) );
+  //connect(d->QueryRetrieveWidget, SIGNAL(canceled()), this, SLOT(onQueryRetrieveFinished()) );
 
   connect(d->ImagePreview, SIGNAL(requestNextImage()), this, SLOT(onNextImage()));
   connect(d->ImagePreview, SIGNAL(requestPreviousImage()), this, SLOT(onPreviousImage()));
@@ -188,7 +188,7 @@ ctkDICOMAppWidget::~ctkDICOMAppWidget()
 {
   Q_D(ctkDICOMAppWidget);  
 
-  d->QueryRetrieveWidget->deleteLater();
+  //d->QueryRetrieveWidget->deleteLater();
   d->ImportDialog->deleteLater();
 }
 
@@ -223,7 +223,7 @@ void ctkDICOMAppWidget::setDatabaseDirectory(const QString& directory)
 
   //pass DICOM database instance to Import widget
   // d->ImportDialog->setDICOMDatabase(d->DICOMDatabase);
-  d->QueryRetrieveWidget->setRetrieveDatabase(d->DICOMDatabase);
+  //d->QueryRetrieveWidget->setRetrieveDatabase(d->DICOMDatabase);
 
   // update the button and let any connected slots know about the change
   d->DirectoryButton->setDirectory(directory);
@@ -299,8 +299,8 @@ void ctkDICOMAppWidget::openQueryDialog()
 {
   Q_D(ctkDICOMAppWidget);
 
-  d->QueryRetrieveWidget->show();
-  d->QueryRetrieveWidget->raise();
+  //d->QueryRetrieveWidget->show();
+  //d->QueryRetrieveWidget->raise();
 
 }
 
@@ -746,7 +746,7 @@ void ctkDICOMAppWidget::onThumbnailWidthSliderValueChanged(int val){
 //----------------------------------------------------------------------------
 void ctkDICOMAppWidget::onSearchParameterChanged(){
   Q_D(ctkDICOMAppWidget);
-  d->DICOMModel.setDatabase(d->DICOMDatabase->database(), d->SearchOption->parameters());
+  //d->DICOMModel.setDatabase(d->DICOMDatabase->database(), d->SearchOption->parameters());
 
   this->onModelSelected(d->DICOMModel.index(0,0));
   d->ThumbnailsWidget->clearThumbnails();
