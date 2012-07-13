@@ -47,10 +47,15 @@ Q_SIGNALS:
   /// Signal emit when studies have been retrieved (user clicked on the
   /// "Retrieve" button) or when the widget is cancelled (user clicked on the
   /// "Cancel" button).
-
 protected Q_SLOTS:
   void onRetrieveProgressChanged(int remainingSteps);
 
+protected:
+  QScopedPointer<ctkDICOMQueryRetrieveWidget> d_ptr;
+
+private:
+  Q_DECLARE_PRIVATE(ctkDICOMQueryRetrieveWidget);
+  Q_DISABLE_COPY(ctkDICOMQueryRetrieveWidget);
 
 };
 
