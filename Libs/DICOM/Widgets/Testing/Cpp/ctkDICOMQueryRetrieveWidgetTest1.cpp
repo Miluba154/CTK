@@ -24,7 +24,7 @@
 #include <QTimer>
 
 // ctkDICOMCore includes
-#include "ctkDICOMQueryRetrieveWidget.h"
+//#include "ctkDICOMQueryRetrieveWidget.h"
 
 // STD includes
 #include <iostream>
@@ -33,23 +33,23 @@ int ctkDICOMQueryRetrieveWidgetTest1( int argc, char * argv [] )
 {
   QApplication app(argc, argv);
  
-  QSharedPointer<ctkDICOMDatabase> dicomDatabase;
-  ctkDICOMQueryRetrieveWidget widget;
-  widget.setRetrieveDatabase(dicomDatabase);
-  if (widget.retrieveDatabase() != dicomDatabase)
-    {
-    std::cerr << "ctkDICOMQueryRetrieveDatabase::setRetrieveDatabase failed."
-              << std::endl;
-    }
+  //QSharedPointer<ctkDICOMDatabase> dicomDatabase;
+  //ctkDICOMQueryRetrieveWidget widget;
+  //widget.setRetrieveDatabase(dicomDatabase);
+  //if (widget.retrieveDatabase() != dicomDatabase)
+  //  {
+  //  std::cerr << "ctkDICOMQueryRetrieveDatabase::setRetrieveDatabase failed."
+  //            << std::endl;
+  //  }
 
-  widget.query();
-  widget.retrieve();
-  widget.show();
+  //widget.query();
+  //widget.retrieve();
+  //widget.show();
 
-  if (argc <= 1 || QString(argv[1]) != "-I")
-    {
-    QTimer::singleShot(200, &app, SLOT(quit()));
-    }
+  //if (argc <= 1 || QString(argv[1]) != "-I")
+  //  {
+  //  QTimer::singleShot(200, &app, SLOT(quit()));
+  //  }
 
   return app.exec();
 }
