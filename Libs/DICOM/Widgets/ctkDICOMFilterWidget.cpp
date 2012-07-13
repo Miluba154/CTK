@@ -19,8 +19,8 @@
 =========================================================================*/
 
 // ctkDICOMWidgets includes
-#include "ctkDICOMQueryWidget.h"
-#include "ui_ctkDICOMQueryWidget.h"
+#include "ctkDICOMFilterWidget.h"
+#include "ui_ctkDICOMFilterWidget.h"
 
 // STD includes
 #include <iostream>
@@ -30,25 +30,25 @@
 
 //logger
 #include <ctkLogger.h>
-static ctkLogger logger("org.commontk.DICOM.Widgets.ctkDICOMQueryWidget");
+static ctkLogger logger("org.commontk.DICOM.Widgets.ctkDICOMFilterWidget");
 
 
 //----------------------------------------------------------------------------
-class ctkDICOMQueryWidgetPrivate: public Ui_ctkDICOMQueryWidget
+class ctkDICOMFilterWidgetPrivate: public Ui_ctkDICOMFilterWidget
 {
 public:
-  ctkDICOMQueryWidgetPrivate();
-  ~ctkDICOMQueryWidgetPrivate();
+  ctkDICOMFilterWidgetPrivate();
+  ~ctkDICOMFilterWidgetPrivate();
 
   QTimer* SearchTimer;
   int SearchIdleTime;
 };
 
 //----------------------------------------------------------------------------
-// ctkDICOMQueryWidgetPrivate methods
+// ctkDICOMFilterWidgetPrivate methods
 
 //----------------------------------------------------------------------------
-ctkDICOMQueryWidgetPrivate::ctkDICOMQueryWidgetPrivate(){
+ctkDICOMFilterWidgetPrivate::ctkDICOMFilterWidgetPrivate(){
   // set default of search idle time to 500 ms
   this->SearchIdleTime = 500;
 
@@ -58,18 +58,18 @@ ctkDICOMQueryWidgetPrivate::ctkDICOMQueryWidgetPrivate(){
 }
 
 //----------------------------------------------------------------------------
-ctkDICOMQueryWidgetPrivate::~ctkDICOMQueryWidgetPrivate(){
+ctkDICOMFilterWidgetPrivate::~ctkDICOMFilterWidgetPrivate(){
   this->SearchTimer->deleteLater();
 }
 
 //----------------------------------------------------------------------------
-// ctkDICOMQueryWidget methods
+// ctkDICOMFilterWidget methods
 
 //----------------------------------------------------------------------------
-ctkDICOMQueryWidget::ctkDICOMQueryWidget(QWidget* _parent):Superclass(_parent), 
-  d_ptr(new ctkDICOMQueryWidgetPrivate)
+ctkDICOMFilterWidget::ctkDICOMFilterWidget(QWidget* _parent):Superclass(_parent), 
+  d_ptr(new ctkDICOMFilterWidgetPrivate)
 {
-  Q_D(ctkDICOMQueryWidget);
+  Q_D(ctkDICOMFilterWidget);
   
   d->setupUi(this);
 
@@ -92,9 +92,9 @@ ctkDICOMQueryWidget::ctkDICOMQueryWidget(QWidget* _parent):Superclass(_parent),
 }
 
 //----------------------------------------------------------------------------
-ctkDICOMQueryWidget::~ctkDICOMQueryWidget()
+ctkDICOMFilterWidget::~ctkDICOMFilterWidget()
 {
-  Q_D(ctkDICOMQueryWidget);
+  Q_D(ctkDICOMFilterWidget);
 
   disconnect(d->NameSearch, SIGNAL(textChanged(QString)), this, SLOT(startTimer()));
   disconnect(d->StudySearch, SIGNAL(textChanged(QString)), this, SLOT(startTimer()));
@@ -114,9 +114,9 @@ ctkDICOMQueryWidget::~ctkDICOMQueryWidget()
 
 
 //----------------------------------------------------------------------------
-QMap<QString,QVariant> ctkDICOMQueryWidget::parameters()
+QMap<QString,QVariant> ctkDICOMFilterWidget::parameters()
 {
-  Q_D(ctkDICOMQueryWidget);
+  Q_D(ctkDICOMFilterWidget);
 
   QMap<QString,QVariant> parameters;
 
@@ -128,7 +128,7 @@ QMap<QString,QVariant> ctkDICOMQueryWidget::parameters()
   if ( !d->ModalityWidget->areAllModalitiesSelected() )
   { // some PACS (conquest) don't seem to accept list of modalities,
     // so don't include the list at all when all modalities are desired
-    // TODO: think about how to fix this for conquest at the query level
+    // TODO: think about how to fix this for conquest at the Filter level
     parameters["Modalities"] = d->ModalityWidget->selectedModalities();
   }
 
@@ -144,16 +144,16 @@ QMap<QString,QVariant> ctkDICOMQueryWidget::parameters()
 }
 
 //----------------------------------------------------------------------------
-void ctkDICOMQueryWidget::startTimer()
+void ctkDICOMFilterWidget::startTimer()
 {
-  Q_D(ctkDICOMQueryWidget);
+  Q_D(ctkDICOMFilterWidget);
 
   d->SearchTimer->stop();
   d->SearchTimer->start(d->SearchIdleTime);
 }
 
 //----------------------------------------------------------------------------
-void ctkDICOMQueryWidget::onReturnPressed()
+void ctkDICOMFilterWidget::onReturnPressed()
 {
   emit returnPressed();
 }

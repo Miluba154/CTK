@@ -18,8 +18,8 @@
 
 =========================================================================*/
 
-#ifndef __ctkDICOMQueryWidget_h
-#define __ctkDICOMQueryWidget_h
+#ifndef __ctkDICOMRetrieveWidget_h
+#define __ctkDICOMRetrieveWidget_h
 
 #include "ctkDICOMWidgetsExport.h"
 
@@ -27,33 +27,42 @@
 #include <QWidget>
 #include <QMap>
 #include <QVariant>
+#include <QStringList>
+#include <QItemSelection>
 
+class ctkDICOMRetrieveWidgetPrivate;
 
-class ctkDICOMQueryWidgetPrivate;
 /// \ingroup DICOM_Widgets
-class CTK_DICOM_WIDGETS_EXPORT ctkDICOMQueryWidget : public QWidget
+class CTK_DICOM_WIDGETS_EXPORT ctkDICOMRetrieveWidget : public QWidget
 {
 Q_OBJECT;
 public:
 
-  explicit ctkDICOMQueryWidget(QWidget* parent=0);
-  virtual ~ctkDICOMQueryWidget();
+  explicit ctkDICOMRetrieveWidget(QWidget* parent=0);
+  virtual ~ctkDICOMRetrieveWidget();
 
 public Q_SLOTS:
-  void query();
+  
+  void retrieve();
   void cancel();
+  void onSelectionChanged(const QItemSelection &, const QItemSelection &);
   void onServerParametersChanged(const QMap<QString,QVariant> &);
 
 Q_SIGNALS:
 
-  void startedQuery();
+  void startedRetrieve();
+  /// Signal emit when studies have been retrieved (user clicked on the
+  /// "Retrieve" button) or when the widget is cancelled (user clicked on the
+  /// "Cancel" button).
+  void studiesRetrieved(QStringList);
   /// Signal to emit when cancel button pressed (after studiesRetrieved is emitted)
   void canceled();
- /// Signal to emit remaining steps of the query process
+   /// Signal to emit remaining steps of the query process
   void progress(int remainingSteps);
-  
+
 protected Q_SLOTS:
-  void onQueryProgressChanged(int remainingSteps);
+  void onRetrieveProgressChanged(int remainingSteps);
+
 };
 
 #endif

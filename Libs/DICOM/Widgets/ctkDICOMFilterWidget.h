@@ -18,42 +18,47 @@
 
 =========================================================================*/
 
-#ifndef __ctkDICOMQueryWidget_h
-#define __ctkDICOMQueryWidget_h
-
-#include "ctkDICOMWidgetsExport.h"
+#ifndef __ctkDICOMFilterWidget_h
+#define __ctkDICOMFilterWidget_h
 
 // Qt includes 
 #include <QWidget>
-#include <QMap>
-#include <QVariant>
 
+#include "ctkDICOMWidgetsExport.h"
 
-class ctkDICOMQueryWidgetPrivate;
+class ctkDICOMFilterWidgetPrivate;
+
 /// \ingroup DICOM_Widgets
-class CTK_DICOM_WIDGETS_EXPORT ctkDICOMQueryWidget : public QWidget
+class CTK_DICOM_WIDGETS_EXPORT ctkDICOMFilterWidget : public QWidget
 {
-Q_OBJECT;
+    Q_OBJECT
 public:
+  typedef QWidget Superclass;
+  explicit ctkDICOMFilterWidget(QWidget* parent=0);
+  virtual ~ctkDICOMFilterWidget();
+  
+  /// return map of field names and values
+  QMap<QString,QVariant> parameters();
 
-  explicit ctkDICOMQueryWidget(QWidget* parent=0);
-  virtual ~ctkDICOMQueryWidget();
+protected:
+  QScopedPointer<ctkDICOMFilterWidgetPrivate> d_ptr;
 
-public Q_SLOTS:
-  void query();
-  void cancel();
-  void onServerParametersChanged(const QMap<QString,QVariant> &);
+private:
+  Q_DECLARE_PRIVATE(ctkDICOMFilterWidget);
+  Q_DISABLE_COPY(ctkDICOMFilterWidget);
 
 Q_SIGNALS:
+  /// This signal is emitted when any of the search parameters changed.
+  void parameterChanged();
 
-  void startedQuery();
-  /// Signal to emit when cancel button pressed (after studiesRetrieved is emitted)
-  void canceled();
- /// Signal to emit remaining steps of the query process
-  void progress(int remainingSteps);
-  
+  /// This signal is emitted when the user hits return in any of the line edits
+  void returnPressed();
+
+public Q_SLOTS:
+  void onReturnPressed();
+
 protected Q_SLOTS:
-  void onQueryProgressChanged(int remainingSteps);
+  void startTimer();
 };
 
 #endif

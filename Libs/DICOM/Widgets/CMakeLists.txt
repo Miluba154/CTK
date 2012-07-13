@@ -23,16 +23,17 @@ set(KIT_SRCS
   ctkDICOMListenerWidget.h
   ctkDICOMQueryResultsTabWidget.cpp
   ctkDICOMQueryResultsTabWidget.h
-  ctkDICOMQueryRetrieveWidget.cpp
   ctkDICOMQueryRetrieveWidget.h
-  ctkDICOMQueryWidget.cpp
-  ctkDICOMQueryWidget.h
+  ctkDICOMFilterWidget.cpp
+  ctkDICOMFilterWidget.h
   ctkDICOMServerNodeWidget.cpp
   ctkDICOMServerNodeWidget.h
   ctkDICOMThumbnailGenerator.cpp
   ctkDICOMThumbnailGenerator.h
   ctkDICOMThumbnailListWidget.cpp
   ctkDICOMThumbnailListWidget.h
+  ctkDICOMRetrieveWidget.h
+  ctkDICOMQueryWidget.h
   )
 
 # Headers that should run through moc
@@ -56,7 +57,7 @@ set(KIT_UI_FORMS
   Resources/UI/ctkDICOMImportWidget.ui
   Resources/UI/ctkDICOMListenerWidget.ui
   Resources/UI/ctkDICOMQueryRetrieveWidget.ui
-  Resources/UI/ctkDICOMQueryWidget.ui
+  Resources/UI/ctkDICOMFilterWidget.ui
   Resources/UI/ctkDICOMServerNodeWidget.ui
 )
 
