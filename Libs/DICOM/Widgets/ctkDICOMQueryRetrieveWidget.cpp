@@ -68,7 +68,7 @@ public:
   
   QProgressDialog*                  ProgressDialog;
   QString                           CurrentServer;
-    bool                              UseProgressDialog;
+  bool                              UseProgressDialog;
 };
 
 //----------------------------------------------------------------------------
