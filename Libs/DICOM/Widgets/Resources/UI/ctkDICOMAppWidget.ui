@@ -150,7 +150,7 @@
          <widget class="QWidget" name="dockWidgetContents">
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
-            <widget class="ctkDICOMQueryWidget" name="SearchOption" native="true">
+            <widget class="ctkDICOMFilterWidget" name="SearchOption" native="true">
              <property name="minimumSize">
               <size>
                <width>0</width>
@@ -522,9 +522,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ctkDICOMQueryWidget</class>
+   <class>ctkDICOMFilterWidget</class>
    <extends>QWidget</extends>
-   <header>ctkDICOMQueryWidget.h</header>
+   <header>ctkDICOMFilterWidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
