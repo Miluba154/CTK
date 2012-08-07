@@ -31,11 +31,13 @@ limitations under the License.
 #include <QFileInfo>
 #include <QDebug>
 #include <QPixmap>
-
+#include <QtConcurrentRun>
 
 // ctkDICOM includes
 #include "ctkLogger.h"
 #include "ctkDICOMIndexer.h"
+#include "ctkDICOMIndexer_p.h"
+#include "ctkDICOMDatabase.h"
 
 // DCMTK includes
 #include <dcmtk/dcmdata/dcfilefo.h>
@@ -49,35 +51,61 @@ limitations under the License.
 #include <dcmtk/dcmimgle/dcmimage.h>  /* for class DicomImage */
 #include <dcmtk/dcmimage/diregist.h>  /* include support for color images */
 
+class AddFileFunctor
+{
+public:
+     AddFileFunctor(ctkDICOMIndexer* indexer, ctkDICOMDatabase& database,
+                    const QString& destinationDirectoryName = "")
+       : Indexer(indexer), Database(database), DestinationDirectoryName(destinationDirectoryName) { }
+
+     bool operator()(const QString &filePath)
+     {
+         Indexer->addFile(Database,filePath,DestinationDirectoryName);
+         return false; // make sure it is removed;
+     }
+
+     ctkDICOMIndexer* Indexer;
+     ctkDICOMDatabase& Database;
+     QString DestinationDirectoryName;
+
+ };
+
 
 //------------------------------------------------------------------------------
 static ctkLogger logger("org.commontk.dicom.DICOMIndexer" );
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class ctkDICOMIndexerPrivate
-{
-public:
-    ctkDICOMIndexerPrivate();
-    ~ctkDICOMIndexerPrivate();
-
-    ctkDICOMAbstractThumbnailGenerator* thumbnailGenerator;
-    bool                    Canceled;
-
-};
-
-//------------------------------------------------------------------------------
 // ctkDICOMIndexerPrivate methods
 
 //------------------------------------------------------------------------------
-ctkDICOMIndexerPrivate::ctkDICOMIndexerPrivate()
+ctkDICOMIndexerPrivate::ctkDICOMIndexerPrivate(ctkDICOMIndexer& o) : q_ptr(&o), Canceled(false), CurrentPercentageProgress(-1)
 {
-    this->Canceled = false;
+  Q_Q(ctkDICOMIndexer);
+  connect(&DirectoryImportWatcher,SIGNAL(progressValueChanged(int)),this,SLOT(OnProgress(int)));
+  connect(&DirectoryImportWatcher,SIGNAL(finished()),q,SIGNAL(indexingComplete()));
+  connect(&DirectoryImportWatcher,SIGNAL(canceled()),q,SIGNAL(indexingComplete()));
 }
 
 //------------------------------------------------------------------------------
 ctkDICOMIndexerPrivate::~ctkDICOMIndexerPrivate()
 {
+  DirectoryImportWatcher.cancel();
+  DirectoryImportWatcher.waitForFinished();
+
+}
+
+void ctkDICOMIndexerPrivate::OnProgress(int)
+{
+  Q_Q(ctkDICOMIndexer);
+
+  int newPercentageProgress = ( 100 * DirectoryImportFuture.progressValue() ) / DirectoryImportFuture.progressMaximum();
+  if (newPercentageProgress != CurrentPercentageProgress)
+    {
+      CurrentPercentageProgress = newPercentageProgress;
+      emit q->progress(newPercentageProgress);
+    }
+
 }
 
 //------------------------------------------------------------------------------
@@ -86,7 +114,7 @@ ctkDICOMIndexerPrivate::~ctkDICOMIndexerPrivate()
 // ctkDICOMIndexer methods
 
 //------------------------------------------------------------------------------
-ctkDICOMIndexer::ctkDICOMIndexer(QObject *parent):d_ptr(new ctkDICOMIndexerPrivate)
+ctkDICOMIndexer::ctkDICOMIndexer(QObject *parent):d_ptr(new ctkDICOMIndexerPrivate(*this))
 {
     Q_UNUSED(parent);
 }
@@ -97,18 +125,19 @@ ctkDICOMIndexer::~ctkDICOMIndexer()
 }
 
 //------------------------------------------------------------------------------
-void ctkDICOMIndexer::addFile(ctkDICOMDatabase& ctkDICOMDatabase, 
-                              const QString& filePath,
-                              const QString& destinationDirectoryName)
+void ctkDICOMIndexer::addFile(ctkDICOMDatabase& database,
+                                   const QString filePath,
+                                   const QString& destinationDirectoryName)
 {
-    if (!destinationDirectoryName.isEmpty())
-    {
-        logger.warn("Ignoring destinationDirectoryName parameter, just taking it as indication we should copy!");
-    }
+  std::cout << filePath.toStdString();
+  if (!destinationDirectoryName.isEmpty())
+  {
+    logger.warn("Ignoring destinationDirectoryName parameter, just taking it as indication we should copy!");
+  }
 
     emit indexingFilePath(filePath);
 
-    ctkDICOMDatabase.insert(filePath, !destinationDirectoryName.isEmpty(), true);
+  database.insert(filePath, !destinationDirectoryName.isEmpty(), true);
 }
 
 //------------------------------------------------------------------------------
@@ -185,6 +214,12 @@ void ctkDICOMIndexer::addFromDICOMDIR(ctkDICOMDatabase& ctkDICOMDatabase,
     std::string dcmFilePath = directoryName.toStdString() + "/DICOMDIR";
     const char* dcmDirFilePath = dcmFilePath.c_str();
 
+  // currently it is not supported to have multiple
+  // parallel directory imports so the second call blocks
+  //
+  d->DirectoryImportWatcher.waitForFinished();
+
+  const std::string src_directory(directoryName.toStdString());
 
     DcmDicomDir* dicomDir = new DcmDicomDir(dcmDirFilePath);
     DcmDirectoryRecord* rootRecord = &(dicomDir->getRootRecord());
@@ -342,6 +377,12 @@ void ctkDICOMIndexer::addFromDICOMDIR(ctkDICOMDatabase& ctkDICOMDatabase,
 
         emit foundFilesToIndex(fileNumber);
     }
+    QString filePath((*iter).c_str());
+    d->FilesToIndex << filePath;
+    ++iter;
+  }
+  d->DirectoryImportFuture = QtConcurrent::filter(d->FilesToIndex,AddFileFunctor(this,ctkDICOMDatabase,destinationDirectoryName));
+  d->DirectoryImportWatcher.setFuture(d->DirectoryImportFuture);
 }
 
 
@@ -389,6 +430,7 @@ void ctkDICOMIndexer::refreshDatabase(ctkDICOMDatabase& dicomDatabase, const QSt
 //----------------------------------------------------------------------------
 void ctkDICOMIndexer::cancel()
 {
-    Q_D(ctkDICOMIndexer);
-    d->Canceled = true;
+
+  Q_D(ctkDICOMIndexer);
+  d->DirectoryImportWatcher.cancel();
 }

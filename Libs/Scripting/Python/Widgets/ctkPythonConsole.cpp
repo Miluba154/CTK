@@ -311,6 +311,7 @@ ctkPythonConsole::ctkPythonConsole(QWidget* parentObject):
   Superclass(new ctkPythonConsolePrivate(*this), parentObject)
 {
   this->setObjectName("pythonConsole");
+  this->setWindowIcon(QIcon(":/python-icon.png"));
 
   // Disable RemoveTrailingSpaces and AutomaticIndentation
   this->setEditorHints(this->editorHints() ^ (RemoveTrailingSpaces | AutomaticIndentation));
@@ -354,7 +355,7 @@ void ctkPythonConsole::initialize(ctkAbstractPythonManager* newPythonManager)
   this->connect(PythonQt::self(), SIGNAL(pythonStdErr(QString)),
                 d, SLOT(printErrorMessage(QString)));
 
-  PythonQt::self()->setRedirectStdInCallBack(
+  PythonQt::self()->setRedirectStdInCallback(
         ctkConsole::stdInRedirectCallBack, reinterpret_cast<void*>(this));
 
   // Set primary and secondary prompt

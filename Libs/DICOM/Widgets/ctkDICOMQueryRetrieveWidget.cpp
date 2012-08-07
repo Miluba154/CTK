@@ -68,7 +68,7 @@ public:
   
   QProgressDialog*                  ProgressDialog;
   QString                           CurrentServer;
-  bool                              UseProgressDialog;
+    bool                              UseProgressDialog;
 };
 
 //----------------------------------------------------------------------------
@@ -357,15 +357,15 @@ void ctkDICOMQueryRetrieveWidget::retrieve()
     // d->RetrievalsByStudyUID[studyUID] = retrieve;
     logger.info ( "Retrieve success" );
     }
-    if(d->UseProgressDialog){
-  QString message(tr("Retrieve Process Finished"));
-
-  if (retrieve->wasCanceled())
-    {
-    message = tr("Retrieve Process Canceled");
-    }
-  QMessageBox::information ( this, tr("Query Retrieve"), message );
-    }
+  if(d->UseProgressDialog)
+  {
+    QString message(tr("Retrieve Process Finished"));
+    if (retrieve->wasCanceled())
+      {
+      message = tr("Retrieve Process Canceled");
+      }
+    QMessageBox::information ( this, tr("Query Retrieve"), message );
+  }
   emit studiesRetrieved(d->RetrievalsByStudyUID.keys());
 
   delete retrieve;

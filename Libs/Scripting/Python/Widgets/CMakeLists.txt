@@ -1,13 +1,6 @@
 project(CTKScriptingPythonWidgets)
 
 #
-# 3rd party dependencies
-#
-if(CTK_LIB_Scripting/Python/Core_PYTHONQT_USE_VTK)
-  include(${VTK_USE_FILE})
-endif()
-
-#
 # See CTK/CMake/ctkMacroBuildLib.cmake for details
 #
 
@@ -31,7 +24,8 @@ set(KIT_UI_FORMS
 
 # Resources
 set(KIT_resources
-)
+  Resources/ctkScriptingPythonWidgets.qrc
+  )
 
 # Target libraries - See CMake/ctkFunctionGetTargetLibraries.cmake
 # The following macro will read the target libraries from the file 'target_libraries.cmake'

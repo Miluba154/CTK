@@ -672,6 +672,14 @@ if((${logical_expr}) AND NOT CTK_LIB_Scripting/Python/Core)
   message("Enabling [CTK_LIB_Scripting/Python/Core] because of [${enabling_msg}] evaluates to True")
 endif()
 
+set(logical_expr CTK_LIB_Scripting/Python/Core AND CTK_LIB_Scripting/Python/Core_PYTHONQT_USE_VTK)
+if(${logical_expr} AND NOT CTK_LIB_Visualization/VTK/Core)
+  set(CTK_LIB_Visualization/VTK/Core ON CACHE BOOL "Build the VTK Core library" FORCE)
+  set(enabling_msg)
+  ctk_option_logical_expression_to_message(enabling_msg "${logical_expr}")
+  message("Enabling [CTK_LIB_Visualization/VTK/Core] because of [${enabling_msg}] evaluates to True")
+endif()
+
 # Check if dependencies are satisfied
 if(CTK_LIB_Scripting/Python/Core)
   find_package(PythonInterp)
@@ -715,8 +723,8 @@ IF (subproject_count EQUAL 0)
   set(CTEST_PROJECT_SUBPROJECTS CTKCore)
 endif()
 
-# Configure CTestConfigSubProject.cmake used that could be used by CTest scripts
-configure_file(${CTK_SOURCE_DIR}/CTestConfigSubProject.cmake.in
+# Configure CTestConfigSubProject.cmake that could be used by CTest scripts
+configure_file(${CTK_SOURCE_DIR}/CMake/CTestConfigSubProject.cmake.in
                ${CTK_BINARY_DIR}/CTestConfigSubProject.cmake)
 
 #-----------------------------------------------------------------------------
@@ -796,11 +804,6 @@ foreach(_external_target ${EXTERNAL_TARGETS})
   endif()
 endforeach()
 
-# Since PYTHONQT_USE_VTK library option can be enabled independently of
-# Visualization/VTK/Core, let's make sure VTK has been properly discovered
-if(CTK_LIB_Scripting/Python/Core_PYTHONQT_USE_VTK)
-  find_package(VTK REQUIRED)
-endif()
 set(CTK_WRAP_PYTHONQT_USE_VTK ${CTK_LIB_Scripting/Python/Core_PYTHONQT_USE_VTK})
 
 #-----------------------------------------------------------------------------
@@ -815,7 +818,7 @@ endif()
 #-----------------------------------------------------------------------------
 # Configure files with settings
 #
-configure_file(${CTK_SOURCE_DIR}/UseCTK.cmake.in
+configure_file(${CTK_SOURCE_DIR}/CMake/UseCTK.cmake.in
                ${CTK_SUPERBUILD_BINARY_DIR}/UseCTK.cmake COPYONLY IMMEDIATE)
 
 set(CTK_CONFIG_H_INCLUDE_DIR ${CTK_BINARY_DIR})
