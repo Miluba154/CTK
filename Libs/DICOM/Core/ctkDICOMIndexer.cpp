@@ -237,15 +237,13 @@ void ctkDICOMIndexer::addDirectory(ctkDICOMDatabase& ctkDICOMDatabase,
   Q_D(ctkDICOMIndexer);
 
   QStringList listOfFiles;
-
   QDir directory(directoryName);
-  QString dicomdir;
 
   if(directory.exists("DICOMDIR"))
   {
-    dicomdir.append(directoryName);
+    addDicomdir(ctkDICOMDatabase,directoryName,destinationDirectoryName);
   }
-  if(dicomdir.isEmpty())
+  else
   {
     QDirIterator it(directoryName,QDir::Files,QDirIterator::Subdirectories);
     while(it.hasNext())
@@ -254,10 +252,6 @@ void ctkDICOMIndexer::addDirectory(ctkDICOMDatabase& ctkDICOMDatabase,
     }
     emit foundFilesToIndex(listOfFiles.count());
     addListOfFiles(ctkDICOMDatabase,listOfFiles,destinationDirectoryName);
-  }
-  else
-  {
-    addDicomdir(ctkDICOMDatabase,dicomdir,destinationDirectoryName);
   }
 }
 
