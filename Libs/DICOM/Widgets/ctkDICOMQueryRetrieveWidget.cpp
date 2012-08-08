@@ -147,6 +147,7 @@ QSharedPointer<ctkDICOMDatabase> ctkDICOMQueryRetrieveWidget::retrieveDatabase()
   return d->RetrieveDatabase;
 }
 
+//----------------------------------------------------------------------------
 void ctkDICOMQueryRetrieveWidget::useProgressDialog(bool enable)
 {
     Q_D(ctkDICOMQueryRetrieveWidget);

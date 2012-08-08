@@ -51,9 +51,6 @@ public:
   /// enable or disable ctk progress bars
   void                   useProgressDialog(bool enable);
 
-  /// enable or disable ctk progress bars
-  void                   useProgressDialog(bool enable);
-
 public Q_SLOTS:
   void setRetrieveDatabase(QSharedPointer<ctkDICOMDatabase> retrieveDatabase);
   void query();
